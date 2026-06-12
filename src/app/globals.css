@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+:root {
+  --bg: #07080c;
+  --panel: #0e1117;
+  --ink: #e8ecf4;
+  --muted: #6b7488;
+  --signal: #5ce1e6;
+  --danger: #ff4d5e;
+  --warn: #ffb020;
+  --profit: #3ddc97;
+  --border: #1c2230;
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-space-grotesk), sans-serif;
+  text-rendering: geometricPrecision;
+}
+
+.eyebrow {
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.data-mono {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-surface {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.glass-overlay {
+  background: rgba(14, 17, 23, 0.75);
+  backdrop-filter: blur(14px);
+}
+
+.ticker-track {
+  animation: ticker-scroll 28s linear infinite;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

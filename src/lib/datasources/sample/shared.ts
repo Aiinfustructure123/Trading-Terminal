@@ -1,0 +1,178 @@
+import { RiskTier, TokenSummary } from "@/lib/datasources/types";
+
+const RISK_ORDER: RiskTier[] = ["low", "moderate", "high", "avoid"];
+
+export const SAMPLE_TOKENS: TokenSummary[] = [
+  {
+    symbol: "NEON",
+    name: "NeonCompute",
+    chain: "solana",
+    address: "9Bb5qm9cSxNeonCompute111111111111111111111",
+    logoColor: "#5CE1E6",
+    priceUsd: 0.0291,
+    change5mPct: 1.4,
+    change1hPct: 5.8,
+    change6hPct: 12.2,
+    change24hPct: 28.4,
+    volume24hUsd: 2_490_000,
+    liquidityUsd: 1_140_000,
+    marketCapUsd: 4_200_000,
+    ageHours: 76,
+    buys24h: 1_425,
+    sells24h: 1_002,
+    riskTier: "moderate",
+  },
+  {
+    symbol: "AURA",
+    name: "AuraGrid",
+    chain: "solana",
+    address: "8JP4auraGrid111111111111111111111111111111",
+    logoColor: "#7AD1FF",
+    priceUsd: 0.0042,
+    change5mPct: 0.4,
+    change1hPct: 2.1,
+    change6hPct: 8.9,
+    change24hPct: 16.5,
+    volume24hUsd: 1_120_000,
+    liquidityUsd: 550_000,
+    marketCapUsd: 2_300_000,
+    ageHours: 52,
+    buys24h: 904,
+    sells24h: 772,
+    riskTier: "low",
+  },
+  {
+    symbol: "MIRA",
+    name: "Mira Index",
+    chain: "solana",
+    address: "4MiraIndex111111111111111111111111111111111",
+    logoColor: "#B07CFF",
+    priceUsd: 0.193,
+    change5mPct: -0.5,
+    change1hPct: 3.3,
+    change6hPct: 7.1,
+    change24hPct: 9.2,
+    volume24hUsd: 3_880_000,
+    liquidityUsd: 2_040_000,
+    marketCapUsd: 12_800_000,
+    ageHours: 330,
+    buys24h: 1_714,
+    sells24h: 1_502,
+    riskTier: "low",
+  },
+  {
+    symbol: "DUST",
+    name: "Dustline",
+    chain: "solana",
+    address: "7Dustline1111111111111111111111111111111111",
+    logoColor: "#FFB020",
+    priceUsd: 0.00043,
+    change5mPct: -2.2,
+    change1hPct: -6.4,
+    change6hPct: -11.1,
+    change24hPct: -19.2,
+    volume24hUsd: 810_000,
+    liquidityUsd: 180_000,
+    marketCapUsd: 920_000,
+    ageHours: 33,
+    buys24h: 510,
+    sells24h: 981,
+    riskTier: "high",
+  },
+  {
+    symbol: "RIFT",
+    name: "Rift Protocol",
+    chain: "solana",
+    address: "9RiftProtocol111111111111111111111111111111",
+    logoColor: "#3DDC97",
+    priceUsd: 0.071,
+    change5mPct: 0.7,
+    change1hPct: 1.4,
+    change6hPct: 4.6,
+    change24hPct: 6.1,
+    volume24hUsd: 940_000,
+    liquidityUsd: 760_000,
+    marketCapUsd: 5_500_000,
+    ageHours: 120,
+    buys24h: 840,
+    sells24h: 745,
+    riskTier: "moderate",
+  },
+  {
+    symbol: "NOVA",
+    name: "Nova Relay",
+    chain: "solana",
+    address: "6NovaRelay111111111111111111111111111111111",
+    logoColor: "#5CE1E6",
+    priceUsd: 0.012,
+    change5mPct: 2.1,
+    change1hPct: 9.7,
+    change6hPct: 14.5,
+    change24hPct: 31.8,
+    volume24hUsd: 4_200_000,
+    liquidityUsd: 1_980_000,
+    marketCapUsd: 9_300_000,
+    ageHours: 27,
+    buys24h: 2_011,
+    sells24h: 1_174,
+    riskTier: "moderate",
+  },
+  {
+    symbol: "WISP",
+    name: "Wisp Meme Ops",
+    chain: "solana",
+    address: "5WispMemeOps1111111111111111111111111111111",
+    logoColor: "#FF4D5E",
+    priceUsd: 0.00091,
+    change5mPct: -0.7,
+    change1hPct: -1.9,
+    change6hPct: 3.5,
+    change24hPct: 44.2,
+    volume24hUsd: 7_100_000,
+    liquidityUsd: 630_000,
+    marketCapUsd: 3_700_000,
+    ageHours: 15,
+    buys24h: 2_800,
+    sells24h: 2_430,
+    riskTier: "avoid",
+  },
+  {
+    symbol: "AXIS",
+    name: "Axis Layer",
+    chain: "solana",
+    address: "2AxisLayer1111111111111111111111111111111111",
+    logoColor: "#8C9AFF",
+    priceUsd: 0.42,
+    change5mPct: 0.1,
+    change1hPct: 0.4,
+    change6hPct: 1.3,
+    change24hPct: -2.8,
+    volume24hUsd: 2_120_000,
+    liquidityUsd: 2_840_000,
+    marketCapUsd: 28_200_000,
+    ageHours: 700,
+    buys24h: 1_104,
+    sells24h: 1_230,
+    riskTier: "low",
+  },
+];
+
+export async function withLatency<T>(value: T, minMs = 120, maxMs = 440): Promise<T> {
+  const delay = Math.floor(minMs + Math.random() * (maxMs - minMs));
+  await new Promise((resolve) => setTimeout(resolve, delay));
+  return value;
+}
+
+export function jitter(base: number, maxPct = 0.015, phase = 0): number {
+  const variation = Math.sin(Date.now() / 18_000 + phase) * maxPct;
+  return base * (1 + variation);
+}
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+export function riskTierToScoreFloor(risk: RiskTier): number {
+  const index = RISK_ORDER.indexOf(risk);
+  return [70, 55, 35, 18][index];
+}
