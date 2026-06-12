@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #07080c;
+  --panel: #0e1117;
+  --panel-border: #1c2230;
+  --ink: #e8ecf4;
+  --muted: #6b7488;
+  --signal: #5ce1e6;
+  --danger: #ff4d5e;
+  --warn: #ffb020;
+  --profit: #3ddc97;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-border: var(--panel-border);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-signal: var(--signal);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --color-profit: var(--profit);
+
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --animate-tick-up: tick-up 0.6s ease-out;
+  --animate-tick-down: tick-down 0.6s ease-out;
+  --animate-panel-in: panel-in 150ms ease-out both;
+  --animate-row-in: row-in 250ms ease-out both;
+  --animate-ticker: ticker 45s linear infinite;
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes tick-up {
+  0% {
+    color: var(--signal);
+    text-shadow: 0 0 12px rgba(92, 225, 230, 0.6);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+
+@keyframes tick-down {
+  0% {
+    color: var(--danger);
+    text-shadow: 0 0 12px rgba(255, 77, 94, 0.5);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-space-grotesk), system-ui, sans-serif;
+}
+
+/* Numbers always tabular */
+.font-mono,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Terminal eyebrow label — the labeling system of the product */
+.eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Panel surface */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+}
+
+/* Glass — overlays and palette ONLY */
+.glass {
+  background: rgba(14, 17, 23, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(28, 34, 48, 0.9);
+}
+
+/* Live-data glowing edge */
+.live-edge {
+  box-shadow: 0 0 0 1px rgba(92, 225, 230, 0.25), 0 0 18px rgba(92, 225, 230, 0.08);
+}
+
+/* Visible keyboard focus */
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Scrollbars that match the instrument */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #1c2230 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #1c2230;
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #11141c 25%, #181d28 50%, #11141c 75%);
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.4s ease infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-wave {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
