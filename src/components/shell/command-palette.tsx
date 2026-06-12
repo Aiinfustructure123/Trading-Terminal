@@ -28,17 +28,32 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+  return (
+    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-bg/70 backdrop-blur-sm" />
+        <DialogPrimitive.Content
+          className="glass fixed left-1/2 top-[12vh] z-50 w-[min(94vw,620px)] -translate-x-1/2 overflow-hidden rounded-lg shadow-2xl animate-panel-in"
+          aria-describedby={undefined}
+        >
+          <DialogPrimitive.Title className="sr-only">Command palette</DialogPrimitive.Title>
+          {/* state lives here so it resets naturally when the dialog unmounts */}
+          <PaletteSurface onOpenChange={onOpenChange} />
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}
+
+function PaletteSurface({
+  onOpenChange,
+}: {
+  onOpenChange: (open: boolean) => void;
+}) {
   const router = useRouter();
   const [search, setSearch] = React.useState("");
   const [selectedToken, setSelectedToken] = React.useState<TokenSummary | null>(null);
   useWatchlist(); // re-render watch state inside the palette
-
-  React.useEffect(() => {
-    if (!open) {
-      setSearch("");
-      setSelectedToken(null);
-    }
-  }, [open]);
 
   const { data: tokens } = useQuery({
     queryKey: ["palette-search", search],
@@ -48,7 +63,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         sort: { key: "volume24hUsd", dir: "desc" },
         limit: 8,
       }),
-    enabled: open && search.trim().length > 0 && !selectedToken,
+    enabled: search.trim().length > 0 && !selectedToken,
     placeholderData: (prev) => prev,
   });
 
@@ -62,15 +77,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   }
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-bg/70 backdrop-blur-sm" />
-        <DialogPrimitive.Content
-          className="glass fixed left-1/2 top-[12vh] z-50 w-[min(94vw,620px)] -translate-x-1/2 overflow-hidden rounded-lg shadow-2xl animate-panel-in"
-          aria-describedby={undefined}
-        >
-          <DialogPrimitive.Title className="sr-only">Command palette</DialogPrimitive.Title>
-          <Command shouldFilter={!selectedToken} loop label="Command palette">
+    <Command shouldFilter={!selectedToken} loop label="Command palette">
             <div className="flex items-center gap-2.5 border-b border-edge px-4">
               <Search size={14} className="shrink-0 text-muted" />
               {selectedToken ? (
@@ -162,18 +169,13 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
               )}
             </Command.List>
 
-            <div className="flex items-center gap-3 border-t border-edge px-4 py-2 text-[10px] text-muted">
-              <span className="num">↑↓ navigate</span>
-              <span className="num">↵ select</span>
-              <span className="num">⌫ back</span>
-              <span className="ml-auto">
-                {selectedToken ? "Token actions" : "Global"}
-              </span>
-            </div>
-          </Command>
-        </DialogPrimitive.Content>
-      </DialogPrimitive.Portal>
-    </DialogPrimitive.Root>
+      <div className="flex items-center gap-3 border-t border-edge px-4 py-2 text-[10px] text-muted">
+        <span className="num">↑↓ navigate</span>
+        <span className="num">↵ select</span>
+        <span className="num">⌫ back</span>
+        <span className="ml-auto">{selectedToken ? "Token actions" : "Global"}</span>
+      </div>
+    </Command>
   );
 }
 

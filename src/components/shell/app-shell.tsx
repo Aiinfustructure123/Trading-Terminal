@@ -39,9 +39,13 @@ function FeedModeChip() {
 function UtcClock() {
   const [now, setNow] = React.useState<Date | null>(null);
   React.useEffect(() => {
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
+    const tick = () => setNow(new Date());
+    const start = setTimeout(tick, 0);
+    const id = setInterval(tick, 1000);
+    return () => {
+      clearTimeout(start);
+      clearInterval(id);
+    };
   }, []);
   return (
     <span className="num hidden w-[88px] text-right text-xs text-muted md:inline-block">

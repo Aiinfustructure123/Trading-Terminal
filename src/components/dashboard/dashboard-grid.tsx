@@ -128,7 +128,12 @@ export function DashboardGrid() {
   }
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+    <DndContext
+      id="dashboard-grid"
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+    >
       <SortableContext items={layout} strategy={rectSortingStrategy}>
         <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
           {layout.map((id) => (

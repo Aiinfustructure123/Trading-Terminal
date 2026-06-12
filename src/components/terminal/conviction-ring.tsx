@@ -97,14 +97,14 @@ export function ConvictionRing({
 
   const gap = 14; // degrees between segments
   const totalSpan = 360 - gap * components.length;
-  let cursor = gap / 2;
 
-  const segments = components.map((comp) => {
+  const segments: { comp: ScoreComponent; start: number; end: number }[] = [];
+  for (let i = 0, cursor = gap / 2; i < components.length; i++) {
+    const comp = components[i];
     const span = comp.weight * totalSpan;
-    const seg = { comp, start: cursor, end: cursor + span };
+    segments.push({ comp, start: cursor, end: cursor + span });
     cursor += span + gap;
-    return seg;
-  });
+  }
 
   const showValue = size >= 44;
   const showCaption = size >= 96;
