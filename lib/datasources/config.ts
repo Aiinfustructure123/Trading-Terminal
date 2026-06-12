@@ -1,11 +1,11 @@
 import type { SourceMode } from "@/lib/datasources/types";
 
-export const datasourceModes = {
+export const datasourceModes: Record<"market" | "onchain" | "security" | "ai", SourceMode> = {
   market: "sample",
   onchain: "sample",
   security: "sample",
   ai: "sample"
-} satisfies Record<string, SourceMode>;
+};
 
 export function sourceStatus(source: keyof typeof datasourceModes) {
   const mode = datasourceModes[source];

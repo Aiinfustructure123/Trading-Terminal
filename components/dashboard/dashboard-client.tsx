@@ -19,7 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useQuery } from "@tanstack/react-query";
 import { GripVertical, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ConvictionRing } from "@/components/conviction-ring";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,13 +44,29 @@ type ScoreSelection = {
   segment?: ConvictionSegment;
 };
 
+function readStoredPanelOrder(): PanelId[] {
+  if (typeof window === "undefined") return [...defaultPanelOrder];
+
+  const stored = window.localStorage.getItem(layoutStorageKey);
+  if (!stored) return [...defaultPanelOrder];
+
+  try {
+    const parsed = JSON.parse(stored) as PanelId[];
+    const known = parsed.filter((id): id is PanelId => defaultPanelOrder.includes(id));
+    const missing = defaultPanelOrder.filter((id) => !known.includes(id));
+    return [...known, ...missing];
+  } catch {
+    return [...defaultPanelOrder];
+  }
+}
+
 export function DashboardClient() {
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard-snapshot"],
     queryFn: () => datasources.market.getDashboardSnapshot(),
     refetchInterval: 5_000
   });
-  const [panelOrder, setPanelOrder] = useState<PanelId[]>([...defaultPanelOrder]);
+  const [panelOrder, setPanelOrder] = useState<PanelId[]>(readStoredPanelOrder);
   const [scoreSelection, setScoreSelection] = useState<ScoreSelection | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -58,20 +74,6 @@ export function DashboardClient() {
       coordinateGetter: sortableKeyboardCoordinates
     })
   );
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(layoutStorageKey);
-    if (!stored) return;
-
-    try {
-      const parsed = JSON.parse(stored) as PanelId[];
-      const known = parsed.filter((id): id is PanelId => defaultPanelOrder.includes(id));
-      const missing = defaultPanelOrder.filter((id) => !known.includes(id));
-      setPanelOrder([...known, ...missing]);
-    } catch {
-      setPanelOrder([...defaultPanelOrder]);
-    }
-  }, []);
 
   function onDragEnd(event: DragEndEvent) {
     const { active, over } = event;

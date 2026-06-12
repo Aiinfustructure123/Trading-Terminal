@@ -44,24 +44,30 @@ export function ConvictionRing({
 
   const weightedSegments = useMemo(() => {
     const totalWeight = segments.reduce((sum, segment) => sum + segment.weight, 0) || 1;
-    let offset = 0;
+    return segments.reduce<{
+      items: Array<ConvictionSegment & { dashArray: string; dashOffset: number; isActive: boolean }>;
+      offset: number;
+    }>(
+      (accumulator, segment) => {
+        const share = segment.weight / totalWeight;
+        const segmentLength = circumference * share * (segment.value / 100);
+        const emptyLength = circumference * share - segmentLength;
 
-    return segments.map((segment) => {
-      const share = segment.weight / totalWeight;
-      const segmentLength = circumference * share * (segment.value / 100);
-      const emptyLength = circumference * share - segmentLength;
-      const dashArray = `${segmentLength} ${circumference - segmentLength}`;
-      const dashOffset = -offset;
-
-      offset += segmentLength + emptyLength + circumference * 0.012;
-
-      return {
-        ...segment,
-        dashArray,
-        dashOffset,
-        isActive: activeKey === segment.key
-      };
-    });
+        return {
+          items: [
+            ...accumulator.items,
+            {
+              ...segment,
+              dashArray: `${segmentLength} ${circumference - segmentLength}`,
+              dashOffset: -accumulator.offset,
+              isActive: activeKey === segment.key
+            }
+          ],
+          offset: accumulator.offset + segmentLength + emptyLength + circumference * 0.012
+        };
+      },
+      { items: [], offset: 0 }
+    ).items;
   }, [activeKey, circumference, segments]);
 
   return (
