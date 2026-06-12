@@ -1,11 +1,11 @@
-import { SecuritySource } from "@/lib/datasources/types";
+import { SecuritySource, TokenForensics } from "@/lib/datasources/types";
 import { SAMPLE_TOKENS, withLatency } from "@/lib/datasources/sample/shared";
 
 export const sampleSecuritySource: SecuritySource = {
   async getTokenForensics(tokenAddress) {
     const token = SAMPLE_TOKENS.find((item) => item.address === tokenAddress) ?? SAMPLE_TOKENS[0];
 
-    const flags = [
+    const flags: TokenForensics["flags"] = [
       {
         id: "authority",
         severity: token.riskTier === "avoid" ? "avoid" : token.riskTier,

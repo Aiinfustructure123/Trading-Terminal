@@ -167,26 +167,32 @@ function PanelSkeleton({ rows = 5 }: { rows?: number }) {
 }
 
 export function DashboardView() {
-  const [panelOrder, setPanelOrder] = useState<DashboardPanelKey[]>([...defaultPanelOrder]);
+  const [panelOrder, setPanelOrder] = useState<DashboardPanelKey[]>(() => {
+    if (typeof window === "undefined") {
+      return [...defaultPanelOrder];
+    }
+
+    const stored = window.localStorage.getItem(DASHBOARD_LAYOUT_KEY);
+    if (!stored) {
+      return [...defaultPanelOrder];
+    }
+
+    try {
+      const parsed = JSON.parse(stored) as DashboardPanelKey[];
+      if (Array.isArray(parsed) && parsed.every((item) => defaultPanelOrder.includes(item))) {
+        return parsed;
+      }
+    } catch {
+      return [...defaultPanelOrder];
+    }
+
+    return [...defaultPanelOrder];
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(DASHBOARD_LAYOUT_KEY);
-    if (!stored) return;
-
-    try {
-      const parsed = JSON.parse(stored) as DashboardPanelKey[];
-      if (Array.isArray(parsed) && parsed.every((item) => defaultPanelOrder.includes(item))) {
-        setPanelOrder(parsed);
-      }
-    } catch {
-      setPanelOrder([...defaultPanelOrder]);
-    }
-  }, []);
 
   useEffect(() => {
     window.localStorage.setItem(DASHBOARD_LAYOUT_KEY, JSON.stringify(panelOrder));

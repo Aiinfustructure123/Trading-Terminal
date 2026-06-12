@@ -36,19 +36,25 @@ export function ConvictionRing({
   const gapLength = Math.max(circumference * 0.006, 2);
 
   const segments = useMemo(() => {
-    let progress = 0;
-
-    return components.map((component, index) => {
+    const baseSegments = components.map((component, index) => {
       const ratio = component.weight / totalWeight;
       const segmentLength = Math.max(circumference * ratio - gapLength, 0);
-      const offset = circumference - progress;
-      progress += segmentLength + gapLength;
 
       return {
         ...component,
         segmentLength,
-        offset,
         color: SEGMENT_COLORS[index % SEGMENT_COLORS.length],
+      };
+    });
+
+    return baseSegments.map((segment, index) => {
+      const consumedLength = baseSegments
+        .slice(0, index)
+        .reduce((sum, current) => sum + current.segmentLength + gapLength, 0);
+
+      return {
+        ...segment,
+        offset: circumference - consumedLength,
       };
     });
   }, [components, circumference, gapLength, totalWeight]);

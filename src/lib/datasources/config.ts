@@ -1,13 +1,13 @@
 import { DataMode } from "@/lib/datasources/types";
 
-export const sourceModeMap = {
+export type DataSourceKey = "market" | "onChain" | "security" | "ai";
+
+export const sourceModeMap: Record<DataSourceKey, DataMode> = {
   market: "sample",
   onChain: "sample",
   security: "sample",
   ai: "sample",
-} as const satisfies Record<string, DataMode>;
-
-export type DataSourceKey = keyof typeof sourceModeMap;
+};
 
 export function getSourceMode(source: DataSourceKey): DataMode {
   return sourceModeMap[source];
