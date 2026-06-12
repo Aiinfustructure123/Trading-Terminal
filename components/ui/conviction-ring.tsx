@@ -44,15 +44,16 @@ export function ConvictionRing({
 
   const segments = useMemo(() => {
     const totalWeight = score.components.reduce((sum, component) => sum + component.weight, 0) || 1;
-    let cursor = 0;
 
-    return score.components.map((component) => {
-      const share = component.weight / totalWeight;
-      const length = Math.max(0, circumference * share - gap);
-      const start = cursor + gap / 2;
-      cursor += circumference * share;
-      return { component, length, start };
-    });
+    return score.components.reduce<Array<{ component: ScoreComponent; length: number; start: number }>>(
+      (items, component) => {
+        const previousEnd = items.reduce((sum, item) => sum + item.length + gap, 0);
+        const share = component.weight / totalWeight;
+        const length = Math.max(0, circumference * share - gap);
+        return [...items, { component, length, start: previousEnd + gap / 2 }];
+      },
+      [],
+    );
   }, [circumference, gap, score.components]);
 
   const activeComponent =
