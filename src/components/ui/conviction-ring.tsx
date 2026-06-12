@@ -63,12 +63,10 @@ export function ConvictionRing({
   const total = 360;
   const usable = total - gap * score.components.length;
 
-  let cursor = 0;
-  const segs = score.components.map((c) => {
+  const segs = score.components.map((c, i) => {
+    const start = score.components.slice(0, i).reduce((sum, p) => sum + usable * p.weight + gap, 0);
     const span = usable * c.weight;
-    const start = cursor;
-    const end = cursor + span;
-    cursor = end + gap;
+    const end = start + span;
     const fillEnd = start + span * (c.subScore / 100);
     return { c, start, end, fillEnd };
   });

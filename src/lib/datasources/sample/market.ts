@@ -150,7 +150,7 @@ export const sampleMarketSource: MarketDataSource = {
 
   async getNarratives(): Promise<Narrative[]> {
     const uni = getUniverse();
-    const list: Narrative[] = NARRATIVES.map((name, idx) => {
+    const list: Narrative[] = NARRATIVES.map((name) => {
       const members = uni.filter((u) => u.narrative === name);
       const marketCap = members.reduce((sum, u) => sum + u.baseMarketCap, 0);
       const top = [...members].sort((a, b) => b.baseMarketCap - a.baseMarketCap).slice(0, 4).map((u) => u.symbol);
