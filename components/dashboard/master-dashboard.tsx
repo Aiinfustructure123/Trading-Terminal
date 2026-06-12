@@ -33,7 +33,7 @@ import {
 } from "@/lib/queries/market";
 import { getSourceMode } from "@/lib/datasources/source-config";
 import { NewLaunch, RankedToken, RiskTier } from "@/lib/datasources/types";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { GripVertical } from "lucide-react";
 
 const STORAGE_KEY = "alpha-terminal.dashboard-layout.v1";
@@ -127,23 +127,25 @@ export function MasterDashboard() {
   const movers = useMoversHeatmap();
   const alerts = useAlertsTicker();
 
-  const [layout, setLayout] = useState<PanelId[]>([...DEFAULT_LAYOUT]);
-
-  useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
+  const [layout, setLayout] = useState<PanelId[]>(() => {
+    if (typeof window === "undefined") {
+      return [...DEFAULT_LAYOUT];
+    }
     try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [...DEFAULT_LAYOUT];
       const parsed = JSON.parse(raw) as PanelId[];
       if (
         parsed.length === DEFAULT_LAYOUT.length &&
         parsed.every((id) => DEFAULT_LAYOUT.includes(id))
       ) {
-        setLayout(parsed);
+        return parsed;
       }
     } catch {
       // ignore corrupted persisted layout
     }
-  }, []);
+    return [...DEFAULT_LAYOUT];
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
