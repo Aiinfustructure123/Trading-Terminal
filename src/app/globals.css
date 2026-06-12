@@ -1,27 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── CSS custom properties ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg:      #07080C;
+  --panel:   #0E1117;
+  --ink:     #E8ECF4;
+  --muted:   #6B7488;
+  --signal:  #5CE1E6;
+  --danger:  #FF4D5E;
+  --warn:    #FFB020;
+  --profit:  #3DDC97;
+  --border:  #1C2230;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Reset / base ───────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── Typography utilities ───────────────────────────────────────────── */
+@layer utilities {
+  /* Eyebrow label — standard pattern above every data block */
+  .label-eyebrow {
+    @apply text-xs font-medium uppercase tracking-widest text-muted;
+  }
+
+  /* All numbers rendered in mono with tabular spacing */
+  .num {
+    @apply font-mono tabular-nums;
+  }
+
+  /* Panel surface */
+  .panel-surface {
+    @apply bg-panel border border-border rounded-md;
+  }
+
+  /* Signal glow border — marks live data sources */
+  .live-border {
+    @apply border border-signal/40;
+    box-shadow: 0 0 0 1px rgba(92, 225, 230, 0.15);
+  }
+
+  /* Skeleton shimmer */
+  .skeleton {
+    background: linear-gradient(90deg, #0E1117 25%, #1C2230 50%, #0E1117 75%);
+    background-size: 200% 100%;
+    animation: skeleton 1.5s ease-in-out infinite;
+  }
+
+  /* Reduce motion overrides */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-ticker-scroll,
+    .animate-tick-flash,
+    .animate-fade-slide-in,
+    .animate-slide-in-top,
+    .animate-pulse-ring {
+      animation: none !important;
+    }
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* ── Component layer ────────────────────────────────────────────────── */
+@layer components {
+  /* Badge base */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-medium uppercase tracking-wide;
+  }
+  .badge-sample {
+    @apply badge bg-warn/10 text-warn border border-warn/30;
+  }
+  .badge-live {
+    @apply badge bg-signal/10 text-signal border border-signal/40;
+  }
+  .badge-low    { @apply badge bg-profit/10 text-profit border border-profit/30; }
+  .badge-moderate { @apply badge bg-warn/10 text-warn border border-warn/30; }
+  .badge-high   { @apply badge bg-danger/10 text-danger border border-danger/30; }
+  .badge-avoid  { @apply badge bg-danger/20 text-danger border border-danger/50; }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  /* Focus ring */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal/60 focus-visible:ring-offset-1 focus-visible:ring-offset-bg;
+  }
+
+  /* Terminal button */
+  .btn-terminal {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium
+           bg-border/60 text-ink border border-border
+           hover:bg-signal/10 hover:border-signal/50 hover:text-signal
+           transition-colors duration-150 focus-ring;
+  }
+
+  /* Glassmorphism overlay (modals, command palette) */
+  .glass {
+    @apply bg-panel/80 backdrop-blur-xl border border-border/60;
   }
 }
