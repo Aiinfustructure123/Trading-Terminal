@@ -24,6 +24,21 @@ const COMPONENT_COLORS: Record<ScoreComponentKey, string> = {
   riskInverse: "#FFB020",
 };
 
+function computeSegments(components: ConvictionScore["components"]) {
+  const segments: Array<{
+    comp: ConvictionScore["components"][number];
+    start: number;
+    end: number;
+  }> = [];
+  let offset = -Math.PI / 2; // start at 12 o'clock
+  for (const comp of components) {
+    const arc = comp.weight * 2 * Math.PI;
+    segments.push({ comp, start: offset, end: offset + arc });
+    offset += arc;
+  }
+  return segments;
+}
+
 interface ConvictionRingProps {
   score: ConvictionScore;
   size?: number;
@@ -56,13 +71,7 @@ export function ConvictionRing({
   const circumference = 2 * Math.PI * r;
   const gap = size >= 40 ? circumference * 0.015 : 0;
 
-  let offset = -Math.PI / 2; // start at 12 o'clock
-  const segments = score.components.map((comp) => {
-    const arc = comp.weight * 2 * Math.PI;
-    const seg = { comp, start: offset, end: offset + arc };
-    offset += arc;
-    return seg;
-  });
+  const segments = computeSegments(score.components);
 
   const valueVisible = (showValue ?? size >= 48) && size >= 28;
   const totalRounded = Math.round(score.total);

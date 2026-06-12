@@ -32,17 +32,6 @@ interface TokenTableProps {
   className?: string;
 }
 
-const SORTABLE: Partial<Record<string, ScreenerSortKey>> = {
-  Price: undefined,
-  "24h": "change24h",
-  "1h": "change1h",
-  Volume: "volume24h",
-  Liquidity: "liquidityUsd",
-  MCap: "marketCap",
-  Age: "ageHours",
-  Score: "conviction",
-};
-
 function HeaderCell({
   label,
   align = "right",
@@ -94,6 +83,7 @@ export function TokenTable({
   emptyMessage = "No tokens match the current filters.",
   className,
 }: TokenTableProps) {
+  "use no memo"; // TanStack Virtual returns functions the React Compiler cannot memoize
   const router = useRouter();
   const parentRef = useRef<HTMLDivElement>(null);
   const breakdown = useBreakdownModal();

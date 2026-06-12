@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Command } from "cmdk";
 import {
   Bell,
@@ -37,9 +37,10 @@ export function CommandPalette({
   const [search, setSearch] = useState("");
   const { ids: watchlist, toggle } = useWatchlist();
 
-  useEffect(() => {
-    if (!open) setSearch("");
-  }, [open]);
+  const close = () => {
+    onOpenChange(false);
+    setSearch("");
+  };
 
   const { data: tokens } = useQuery({
     queryKey: ["palette-search", search],
@@ -54,7 +55,7 @@ export function CommandPalette({
   });
 
   const go = (href: string) => {
-    onOpenChange(false);
+    close();
     router.push(href);
   };
 
@@ -63,13 +64,16 @@ export function CommandPalette({
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pt-[12vh]"
-      onClick={() => onOpenChange(false)}
+      onClick={close}
     >
       <Command
         label="Command palette"
         shouldFilter={false}
         className="glass w-full max-w-xl overflow-hidden rounded-lg"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") close();
+        }}
       >
         <div className="flex items-center gap-2 border-b border-panel-border px-3">
           <Search className="size-4 shrink-0 text-muted" aria-hidden />
@@ -172,7 +176,7 @@ export function CommandPalette({
                 value="action-watch-top"
                 onSelect={() => {
                   toggle(tokens[0].id);
-                  onOpenChange(false);
+                  close();
                 }}
                 className="flex cursor-pointer items-center gap-3 rounded px-2 py-2 text-sm data-[selected=true]:bg-signal/10"
               >

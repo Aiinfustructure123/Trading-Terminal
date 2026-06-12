@@ -1,47 +1,72 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 
 /**
- * Hydration-safe localStorage state. Returns the default on the server and
- * first client render, then syncs. Writes are broadcast across hook instances
- * via a custom event so e.g. the watchlist count updates everywhere at once.
+ * Hydration-safe localStorage state built on useSyncExternalStore.
+ * All hook instances for the same key share one in-memory entry, so a write
+ * anywhere (e.g. toggling a watchlist star) updates every subscriber at once.
  */
-export function useLocalStorage<T>(key: string, defaultValue: T) {
-  const [value, setValue] = useState<T>(defaultValue);
-  const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
+interface Entry {
+  value: unknown;
+  listeners: Set<() => void>;
+}
+
+const cache = new Map<string, Entry>();
+
+function getEntry(key: string, defaultValue: unknown): Entry {
+  let entry = cache.get(key);
+  if (!entry) {
+    let value = defaultValue;
     try {
       const raw = window.localStorage.getItem(key);
-      if (raw !== null) setValue(JSON.parse(raw) as T);
+      if (raw !== null) value = JSON.parse(raw);
     } catch {
-      // corrupted entry — fall back to default
+      // corrupted or unavailable storage — fall back to default
     }
-    setHydrated(true);
+    entry = { value, listeners: new Set() };
+    cache.set(key, entry);
+  }
+  return entry;
+}
 
-    const onSync = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { key: string; value: unknown };
-      if (detail.key === key) setValue(detail.value as T);
-    };
-    window.addEventListener("local-storage-sync", onSync);
-    return () => window.removeEventListener("local-storage-sync", onSync);
-  }, [key]);
+export function useLocalStorage<T>(key: string, defaultValue: T) {
+  const defaultRef = useRef(defaultValue);
+
+  const subscribe = useCallback(
+    (cb: () => void) => {
+      const entry = getEntry(key, defaultRef.current);
+      entry.listeners.add(cb);
+      return () => entry.listeners.delete(cb);
+    },
+    [key]
+  );
+
+  const value = useSyncExternalStore(
+    subscribe,
+    () => getEntry(key, defaultRef.current).value as T,
+    () => defaultRef.current
+  );
+
+  const hydrated = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false
+  );
 
   const set = useCallback(
     (next: T | ((prev: T) => T)) => {
-      setValue((prev) => {
-        const resolved = typeof next === "function" ? (next as (p: T) => T)(prev) : next;
-        try {
-          window.localStorage.setItem(key, JSON.stringify(resolved));
-          window.dispatchEvent(
-            new CustomEvent("local-storage-sync", { detail: { key, value: resolved } })
-          );
-        } catch {
-          // storage full / unavailable — keep in-memory state
-        }
-        return resolved;
-      });
+      const entry = getEntry(key, defaultRef.current);
+      const resolved =
+        typeof next === "function" ? (next as (p: T) => T)(entry.value as T) : next;
+      entry.value = resolved;
+      try {
+        window.localStorage.setItem(key, JSON.stringify(resolved));
+      } catch {
+        // storage full / unavailable — keep in-memory state
+      }
+      entry.listeners.forEach((l) => l());
     },
     [key]
   );

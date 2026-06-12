@@ -35,9 +35,12 @@ function Clock() {
   useEffect(() => {
     const fmt = () =>
       new Date().toLocaleTimeString("en-US", { hour12: false, timeZone: "UTC" }) + " UTC";
-    setNow(fmt());
+    const initial = setTimeout(() => setNow(fmt()), 0);
     const id = setInterval(() => setNow(fmt()), 1000);
-    return () => clearInterval(id);
+    return () => {
+      clearTimeout(initial);
+      clearInterval(id);
+    };
   }, []);
   return (
     <span className="hidden font-mono text-xs text-muted sm:block" data-numeric suppressHydrationWarning>
