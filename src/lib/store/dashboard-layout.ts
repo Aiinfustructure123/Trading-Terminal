@@ -3,10 +3,10 @@
 import { createLocalStore } from "./local-store";
 
 export const DASHBOARD_PANEL_IDS = [
-  "narratives",
   "opportunities",
-  "launches",
+  "narratives",
   "heatmap",
+  "launches",
 ] as const;
 
 export type DashboardPanelId = (typeof DASHBOARD_PANEL_IDS)[number];

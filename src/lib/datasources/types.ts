@@ -131,6 +131,7 @@ export interface TickerAlert {
 
 export interface ScreenerFilter {
   search?: string;
+  narrative?: string;
   chains?: Chain[];
   /** USD ceiling, e.g. 5_000_000. */
   maxMarketCapUsd?: number;

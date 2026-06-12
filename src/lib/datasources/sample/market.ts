@@ -19,6 +19,7 @@ function applyFilter(tokens: TokenSummary[], filter?: ScreenerFilter): TokenSumm
   const search = filter.search?.trim().toLowerCase();
   return tokens.filter((t) => {
     if (filter.ids && !filter.ids.includes(t.id)) return false;
+    if (filter.narrative && t.narrative.toLowerCase() !== filter.narrative.toLowerCase()) return false;
     if (filter.chains && filter.chains.length > 0 && !filter.chains.includes(t.chain)) return false;
     if (filter.maxMarketCapUsd !== undefined && t.marketCapUsd > filter.maxMarketCapUsd) return false;
     if (filter.minLiquidityUsd !== undefined && t.liquidityUsd < filter.minLiquidityUsd) return false;
