@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+/* ============================================================
+   ALPHA TERMINAL — Design Token System
+   Tailwind v4 theme. Tokens here are the single source of truth
+   for color, type, spacing rhythm, and motion across the app.
+   ============================================================ */
+
+@theme {
+  /* Surfaces */
+  --color-bg: #07080c;
+  --color-panel: #0e1117;
+  --color-panel-2: #12161f;
+  --color-border: #1c2230;
+  --color-border-strong: #28303f;
+
+  /* Text */
+  --color-ink: #e8ecf4;
+  --color-muted: #6b7488;
+
+  /* Signal palette — color is meaning, never decoration */
+  --color-signal: #5ce1e6; /* live data, primary action, positive momentum */
+  --color-danger: #ff4d5e; /* risk, drawdown, sell pressure */
+  --color-warn: #ffb020; /* caution, Moderate risk */
+  --color-profit: #3ddc97; /* gains, buy pressure */
+
+  /* Fonts */
+  --font-display: var(--font-space-grotesk), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* Radius */
+  --radius-panel: 10px;
+
+  /* Motion */
+  --ease-terminal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-bg);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Tabular numerals everywhere mono is used */
+.font-mono {
+  font-feature-settings: "tnum" 1, "zero" 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 11px uppercase letterspaced eyebrow — the labeling system that
+   IS the visual structure of the terminal */
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+/* Panel surface */
+.panel {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+}
+
+/* Glass — overlays / modals / command palette ONLY */
+.glass {
+  background: color-mix(in srgb, var(--color-panel) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--color-border-strong);
+}
+
+/* Live glow — a glowing edge means live data updating */
+.live-glow {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-signal) 40%, transparent),
+    0 0 18px -6px color-mix(in srgb, var(--color-signal) 60%, transparent);
+}
+
+/* Focus ring — always visible keyboard focus */
+*:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Scrollbars tuned for the dark field */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 6px;
+  border: 2px solid var(--color-bg);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Number tick flash on update */
+@keyframes tick-up {
+  0% {
+    color: var(--color-profit);
+    text-shadow: 0 0 12px color-mix(in srgb, var(--color-profit) 70%, transparent);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+@keyframes tick-down {
+  0% {
+    color: var(--color-danger);
+    text-shadow: 0 0 12px color-mix(in srgb, var(--color-danger) 70%, transparent);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+.tick-up {
+  animation: tick-up 0.6s var(--ease-terminal);
+}
+.tick-down {
+  animation: tick-down 0.6s var(--ease-terminal);
+}
+
+/* Panel mount: fade-slide in 150ms */
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-panel-in {
+  animation: panel-in 0.15s var(--ease-terminal) both;
+}
+
+/* New-launches feed: slide a new row in from the top */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-row-in {
+  animation: row-in 0.25s var(--ease-terminal) both;
+}
+
+/* Marquee for the alerts ticker */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-panel-2);
+  border-radius: 4px;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-border-strong) 60%, transparent),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+/* Respect reduced motion across the board */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .animate-marquee {
+    animation: none !important;
+  }
+}
+
+/* Hide scrollbar utility for inner ticker */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
