@@ -1,0 +1,84 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+:root {
+  --bg: #07080c;
+  --panel: #0e1117;
+  --ink: #e8ecf4;
+  --muted: #6b7488;
+  --signal: #5ce1e6;
+  --danger: #ff4d5e;
+  --warn: #ffb020;
+  --profit: #3ddc97;
+  --border: #1c2230;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-space-grotesk), sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+.data-mono {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  box-shadow: 0 8px 30px rgba(5, 8, 14, 0.45);
+}
+
+.terminal-table th {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.terminal-table td,
+.terminal-table th {
+  border-bottom: 1px solid var(--border);
+  padding: 0.625rem 0.75rem;
+}
+
+.ticker-track {
+  white-space: nowrap;
+  animation: ticker 28s linear infinite;
+}
+
+.glass {
+  border: 1px solid rgba(232, 236, 244, 0.12);
+  background: rgba(14, 17, 23, 0.66);
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
