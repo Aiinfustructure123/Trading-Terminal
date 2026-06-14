@@ -28,6 +28,7 @@ import { liveMarketSource }   from "./live/market";
 import { liveTokenSource }    from "./live/dexscreener";
 import { liveOnChainSource }  from "./live/onchain";
 import { liveSecuritySource } from "./live/security";
+import { liveAISource }       from "./live/ai";
 
 // ── Environment-driven config ─────────────────────────────────────────────────
 // In Phase 0: everything is "sample".
@@ -61,7 +62,7 @@ export const marketSource:     MarketDataSource  = MARKET_LIVE   ? liveMarketSou
 export const tokenSource:      TokenDataSource   = TOKEN_LIVE    ? liveTokenSource    : sampleTokenSource;
 export const onChainSource:    OnChainSource     = ONCHAIN_LIVE  ? liveOnChainSource  : sampleOnChainSource;
 export const securitySource:   SecuritySource    = SECURITY_LIVE ? liveSecuritySource : sampleSecuritySource;
-export const aiSource:         AISource          = sampleAISource;     // Phase 2
+export const aiSource:         AISource          = AI_LIVE ? liveAISource : sampleAISource;
 export const smartMoneySource: SmartMoneySource  = sampleSmartMoneySource;
 export const alertsSource:     AlertsSource      = sampleAlertsSource;
 

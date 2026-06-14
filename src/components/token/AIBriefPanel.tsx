@@ -92,6 +92,10 @@ export function AIBriefPanel({ address, chain }: Props) {
       <div className="p-4 space-y-2">
         {isLoading ? (
           <div className="space-y-3">
+            <div className="flex items-center gap-2 p-3 rounded border border-signal/20 bg-signal/5">
+              <RefreshCw size={12} className="text-signal animate-spin flex-shrink-0" />
+              <span className="text-xs text-muted">Generating brief from on-chain data…</span>
+            </div>
             {Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-16 w-full" />)}
           </div>
         ) : data ? (
@@ -103,8 +107,11 @@ export function AIBriefPanel({ address, chain }: Props) {
             <BriefSection label="Key Risks" content={data.keyRisks} />
             <BriefSection label="What Would Change the Picture" content={data.whatWouldChange} />
 
-            <div className="text-2xs text-muted border-t border-border pt-2">
-              Model: {data.model} · Data-grounded analysis only · No price predictions · Not financial advice
+            <div className="text-2xs text-muted border-t border-border pt-2 flex items-center justify-between flex-wrap gap-1">
+              <span>Model: {data.model} · Data-grounded only · No price predictions · Not financial advice</span>
+              {data.source?.mode === "live" && (
+                <span className="text-signal font-mono">Powered by Claude</span>
+              )}
             </div>
           </>
         ) : null}
