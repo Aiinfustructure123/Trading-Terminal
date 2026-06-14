@@ -96,6 +96,30 @@ async function fetchFromAPI<T>(url: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// ── Profile cache (logos, descriptions) ─────────────────────────────────────
+
+let profileIconCache: Map<string, string> | null = null;
+let profileCacheTime = 0;
+const PROFILE_TTL = 60_000;
+
+async function getProfileIcon(address: string): Promise<string | undefined> {
+  const now = Date.now();
+  if (!profileIconCache || now - profileCacheTime > PROFILE_TTL) {
+    try {
+      const res = await fetchFromAPI<{ profiles: Array<{ tokenAddress: string; icon?: string }> }>(
+        "/api/dexscreener/profiles"
+      );
+      profileIconCache = new Map(
+        (res.profiles ?? []).map(p => [p.tokenAddress.toLowerCase(), p.icon ?? ""])
+      );
+      profileCacheTime = now;
+    } catch {
+      profileIconCache = new Map();
+    }
+  }
+  return profileIconCache?.get(address.toLowerCase()) || undefined;
+}
+
 // ── Service implementation ───────────────────────────────────────────────────
 
 export const liveTokenSource: TokenDataSource = {
@@ -108,9 +132,12 @@ export const liveTokenSource: TokenDataSource = {
         p.baseToken.address.toLowerCase() === address.toLowerCase()
       );
       if (!pairs.length) throw new Error("Token not found");
-      // Pick the pair with highest liquidity
       const best = pairs.sort((a, b) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0))[0];
-      return pairToToken(best);
+      const token = pairToToken(best);
+      // Enrich with profile icon
+      const icon = best.info?.imageUrl ?? await getProfileIcon(address);
+      if (icon) token.logoUrl = icon;
+      return token;
     } catch {
       // Fallback to sample
       return SAMPLE_TOKENS.find(t => t.address === address) ?? SAMPLE_TOKENS[0];
@@ -228,11 +255,18 @@ export const liveTokenSource: TokenDataSource = {
 
   async getNewLaunches(_chain: Chain, limit = 20): Promise<NewLaunchesData> {
     try {
-      const boosts = await fetchFromAPI<Array<{ chainId: string; tokenAddress: string; icon?: string }>>("/api/dexscreener/new-launches");
+      // Combined profiles + boosts feed
+      const feed = await fetchFromAPI<Array<{ chainId: string; tokenAddress: string; icon?: string }>>(
+        "/api/dexscreener/new-launches"
+      );
 
-      // Fetch pair data for the boosted tokens
-      const solanaBoosts = boosts
-        .filter(b => b.chainId === "solana")
+      const targetChain = _chain === "ethereum" ? "ethereum"
+        : _chain === "base" ? "base" : "solana";
+
+      const solanaBoosts = feed
+        .filter(b => targetChain === "solana"
+          ? b.chainId === "solana"
+          : b.chainId === targetChain)
         .slice(0, 20);
 
       if (!solanaBoosts.length) throw new Error("No launches");
